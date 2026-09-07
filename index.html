@@ -4,8 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator Invoice - Oleh Oleh Jogja Hits</title>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Library html2pdf.js untuk Unduh PDF Langsung tanpa Lewat Printer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -25,28 +30,17 @@
       }
     }
   </script>
-  <<style>
-    /* Styling khusus cetak & print PDF A4 (Mencegah halaman kosong tambahan) */
+  <style>
+    /* Styling khusus cetak & PDF agar pas 1 Halaman A4 */
     @media print {
-      html, body {
+      body {
         background: #ffffff !important;
         color: #000000 !important;
         margin: 0 !important;
         padding: 0 !important;
-        min-height: 0 !important;
-        height: auto !important;
-        overflow: visible !important;
       }
       .no-print {
         display: none !important;
-      }
-      /* Menghilangkan padding, margin & grid dari container utama saat cetak */
-      main, #previewSection {
-        display: block !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
       }
       .print-area {
         box-shadow: none !important;
@@ -56,10 +50,6 @@
         padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-        page-break-after: avoid !important;
-        break-after: avoid !important;
       }
       @page {
         size: A4 portrait;
@@ -67,7 +57,6 @@
       }
     }
 
-    /* Scrollbar halus */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -83,13 +72,13 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 
-  <!-- Toast Notification Custom (Pengganti alert) -->
+  <!-- Toast Notification -->
   <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm font-medium border border-slate-700">
     <span id="toastIcon">✨</span>
     <span id="toastMsg">Pesan notifikasi</span>
   </div>
 
-  <!-- Header Aplikasi (Navigasi Atas) -->
+  <!-- Header Aplikasi -->
   <header class="no-print bg-brand-900 text-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
@@ -98,15 +87,15 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide">Oleh Oleh Jogja Hits</h1>
-          <p class="text-xs text-brand-100">Sistem Kasir & Cetak Invoice Mandiri</p>
+          <p class="text-xs text-brand-100">Sistem Pembuat Invoice Mandiri</p>
         </div>
       </div>
 
-      <!-- Tombol Aksi Cepat di Header -->
+      <!-- Tombol Aksi Utama -->
       <div class="flex items-center gap-2">
-        <button onclick="window.print()" class="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-lg shadow transition active:scale-95">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-          <span>Cetak / PDF</span>
+        <button onclick="downloadPDFDirectly()" class="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-lg shadow transition active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Unduh PDF Langsung</span>
         </button>
         <button onclick="copyWAText()" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-lg shadow transition active:scale-95">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
@@ -116,10 +105,10 @@
     </div>
   </header>
 
-  <!-- Tombol Tab Khusus Mobile -->
+  <!-- Tombol Tab Khusus Layar HP/Mobile -->
   <div class="no-print lg:hidden bg-white border-b border-slate-200 px-4 py-2 sticky top-[61px] z-30 flex gap-2">
     <button id="tabBtnForm" onclick="switchMobileTab('form')" class="flex-1 py-2 text-sm font-bold rounded-md bg-brand-600 text-white transition">
-      ✏️ Form Edit
+      ✏️ Edit Data
     </button>
     <button id="tabBtnPreview" onclick="switchMobileTab('preview')" class="flex-1 py-2 text-sm font-bold rounded-md bg-slate-100 text-slate-700 transition">
       📄 Pratinjau Invoice
@@ -129,12 +118,12 @@
   <!-- Kontainer Utama -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- KOLOM KIRI: FORM PENGATURAN & INPUT (NO-PRINT) -->
-    <section id="formSection" class="no-print lg:col-span-5 flex flex-col gap-5">
+    <!-- FORM INPUT DATA (NO-PRINT) -->
+    <section id="formSection" class="no-print lg:col-span-5 flex flex-col gap-4">
       
-      <!-- Preset Cepat Pesanan Populer -->
+      <!-- Template Cepat -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">⚡ Template Cepat (Isi Otomatis)</label>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">⚡ Template Cepat (1-Klik)</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <button onclick="loadPreset('raja')" class="p-2 border border-slate-200 hover:border-brand-500 hover:bg-brand-50 text-slate-700 font-medium rounded-lg text-left transition">
             🎁 Paket 300k (Raja)
@@ -146,33 +135,22 @@
             🛍️ Paket Campur 509k
           </button>
           <button onclick="loadPreset('eceran')" class="p-2 border border-slate-200 hover:border-brand-500 hover:bg-brand-50 text-slate-700 font-medium rounded-lg text-left transition">
-            🛒 Pesanan Eceran Satuan
+            🛒 Pesanan Eceran
           </button>
         </div>
       </div>
 
-      <!-- Pengaturan Toko & Logo Upload -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <!-- Informasi Toko & Logo Option -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 border-b pb-2">
           <span>🏪</span> Pengaturan Toko & Logo
         </h2>
 
-        <!-- Upload Logo Area -->
+        <!-- Option Ganti Custom Logo jika mau -->
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Logo Toko (Bisa Upload Gambar)</label>
-          <div class="flex items-center gap-3">
-            <div id="logoThumbnailWrapper" class="w-14 h-14 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden bg-slate-50">
-              <span id="logoPlaceholder" class="text-2xl">🏬</span>
-              <img id="logoThumbImg" src="" alt="Logo" class="hidden w-full h-full object-contain">
-            </div>
-            <div class="flex-1">
-              <input type="file" id="logoInput" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
-              <div class="flex gap-2 mt-1">
-                <button type="button" onclick="removeLogo()" class="text-[11px] text-red-600 hover:underline">Hapus Logo</button>
-                <span class="text-[11px] text-slate-400">• Format PNG/JPG</span>
-              </div>
-            </div>
-          </div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Upload Custom Logo (Opsional)</label>
+          <input type="file" id="logoInput" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+          <button type="button" onclick="resetDefaultLogo()" class="text-[11px] text-brand-600 hover:underline mt-1">Kembalikan Logo Default Toko</button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -181,32 +159,32 @@
             <input type="text" id="storeNameInput" value="Oleh Oleh Jogja Hits" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Slogan / Deskripsi Singkat</label>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Deskripsi Toko</label>
             <input type="text" id="storeSubInput" value="Layanan Pemesanan & Pengiriman Makanan Khas Jogja" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
           </div>
         </div>
       </div>
 
-      <!-- Rincian Nota / Invoice Meta -->
+      <!-- Rincian Nota & Pelanggan -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 border-b pb-2">
-          <span>📝</span> Rincian Nota & Pelanggan
+          <span>📝</span> Rincian Nota
         </h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pelanggan (Yth)</label>
-            <input type="text" id="customerNameInput" placeholder="Contoh: Raja / Bu Ani" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="text" id="customerNameInput" placeholder="Misal: Raja" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Invoice</label>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
             <input type="text" id="invoiceDateInput" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Nomor Invoice</label>
             <div class="flex gap-1">
               <input type="text" id="invoiceNoInput" oninput="renderInvoice()" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
-              <button onclick="regenerateInvNo()" title="Acak Nomor Baru" class="p-2 border border-slate-300 rounded-lg hover:bg-slate-100 text-xs">🔄</button>
+              <button onclick="regenerateInvNo()" class="p-2 border border-slate-300 rounded-lg hover:bg-slate-100 text-xs">🔄</button>
             </div>
           </div>
           <div>
@@ -220,26 +198,26 @@
         </div>
       </div>
 
-      <!-- Form Input Daftar Barang / Paket -->
+      <!-- Daftar Produk / Paket -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex items-center justify-between border-b pb-2">
           <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-            <span>🛒</span> Daftar Produk / Paket (<span id="itemCountBadge">0</span>)
+            <span>🛒</span> Daftar Produk (<span id="itemCountBadge">0</span>)
           </h2>
-          <button onclick="addNewItem()" class="text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+          <button onclick="addNewItem()" class="text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 px-3 py-1.5 rounded-lg transition">
             + Tambah Baris
           </button>
         </div>
 
-        <div id="itemsEditorContainer" class="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-          <!-- Item list dinamis di-render melalui JavaScript -->
+        <div id="itemsEditorContainer" class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+          <!-- Item dinamis -->
         </div>
       </div>
 
-      <!-- Pengaturan Ongkir, Diskon & Rekening -->
+      <!-- Biaya & Catatan -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 border-b pb-2">
-          <span>💰</span> Ongkos Kirim & Diskon
+          <span>💰</span> Biaya Tambahan & Diskon
         </h2>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -252,39 +230,39 @@
           </div>
         </div>
 
-        <div class="pt-2">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Catatan Tambahan (Opsional)</label>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Catatan Tambahan</label>
           <input type="text" id="customNoteInput" value="Mohon kirimkan foto/tangkapan layar bukti transfer kepada kami agar pesanan segera diproses." oninput="renderInvoice()" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
         </div>
       </div>
 
     </section>
 
-    <!-- KOLOM KANAN: LIVE PREVIEW INVOICE A4 (PRINT-AREA) -->
+    <!-- LIVE PREVIEW INVOICE (PRINT AREA) -->
     <section id="previewSection" class="lg:col-span-7 flex flex-col items-center">
       
-      <div class="w-full flex justify-between items-center mb-3 no-print">
+      <div class="w-full flex justify-between items-center mb-2 no-print">
         <span class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Pratinjau Lembar Siap Cetak (A4)
+          Pratinjau Cetak
         </span>
-        <div class="text-xs text-slate-400">Ukuran pas 1 Halaman A4</div>
+        <div class="text-xs text-slate-400">Pas 1 Halaman A4</div>
       </div>
 
-      <!-- LEMBAR INVOICE (Persis Desain Final yang Dipakai) -->
-      <div id="invoiceSheet" class="print-area bg-white text-[#2d3748] w-full rounded-lg shadow-xl border border-slate-200 p-5 sm:p-7 text-[8.5pt] leading-[1.35] transition-all">
+      <!-- LEMBAR INVOICE A4 -->
+      <div id="invoiceSheet" class="print-area bg-white text-[#2d3748] w-full rounded-lg shadow-xl border border-slate-200 p-5 sm:p-6 text-[8.5pt] leading-[1.3] transition-all">
         
         <!-- Header Invoice -->
-        <table class="w-full border-collapse mb-3 pb-2 border-b-2 border-brand-500">
+        <table class="w-full border-collapse mb-2.5 pb-2 border-b-2 border-brand-500">
           <tr>
             <td class="align-top">
               <div class="flex items-center gap-3">
-                <!-- Logo Display -->
-                <div id="invoiceLogoArea" class="hidden">
-                  <img id="invoiceLogoImg" src="" alt="Logo Toko" class="max-h-12 max-w-[120px] object-contain">
+                <!-- LOGO PERMANEN EMBEDDED BASE64 -->
+                <div id="invoiceLogoArea">
+                  <img id="invoiceLogoImg" src="" alt="Logo Toko" class="max-h-12 max-w-[110px] object-contain">
                 </div>
                 <div>
-                  <div id="viewStoreName" class="text-[17pt] font-extrabold text-[#1a365d] uppercase tracking-wide leading-tight">
+                  <div id="viewStoreName" class="text-[16pt] font-extrabold text-[#1a365d] uppercase tracking-wide leading-tight">
                     Oleh Oleh Jogja Hits
                   </div>
                   <div id="viewStoreSub" class="text-[7.5pt] text-[#4a5568] mt-0.5">
@@ -294,7 +272,7 @@
               </div>
             </td>
             <td class="text-right align-top">
-              <div class="text-[14pt] font-extrabold text-brand-600 tracking-wider">INVOICE</div>
+              <div class="text-[13pt] font-extrabold text-brand-600 tracking-wider">INVOICE</div>
               <div id="viewCustomerRow" class="text-[8pt] text-slate-700 mt-0.5 hidden">
                 Kepada Yth: <strong id="viewCustomerName">Raja</strong>
               </div>
@@ -307,29 +285,29 @@
           </tr>
         </table>
 
-        <!-- Ucapan Terima Kasih -->
-        <div class="bg-brand-50 border-l-4 border-brand-500 px-3 py-2 rounded-r mb-3 text-brand-700 font-medium text-[8pt]">
+        <!-- Banner Greeting -->
+        <div class="bg-brand-50 border-l-3 border-brand-500 px-3 py-1.5 rounded-r mb-2.5 text-brand-700 font-medium text-[8pt]">
           <strong>Terima kasih <span id="viewGreetingName"></span>sudah berbelanja bersama kami!</strong> Silakan periksa rincian pesanan Anda di bawah ini.
         </div>
 
-        <!-- Tabel Daftar Pesanan -->
-        <table class="w-full border-collapse mb-2.5">
+        <!-- Tabel Barang -->
+        <table class="w-full border-collapse mb-2">
           <thead>
             <tr class="bg-brand-600 text-white uppercase text-[7.5pt] tracking-wider">
-              <th class="w-[6%] py-1.5 px-2 text-center font-semibold">No</th>
-              <th class="w-[8%] py-1.5 px-2 text-center font-semibold">Qty</th>
-              <th class="w-[48%] py-1.5 px-2 text-left font-semibold">Rincian Paket & Isi</th>
-              <th class="w-[18%] py-1.5 px-2 text-right font-semibold">Harga Satuan</th>
-              <th class="w-[20%] py-1.5 px-2 text-right font-semibold">Subtotal</th>
+              <th class="w-[6%] py-1 px-1.5 text-center font-semibold">No</th>
+              <th class="w-[8%] py-1 px-1.5 text-center font-semibold">Qty</th>
+              <th class="w-[48%] py-1 px-1.5 text-left font-semibold">Rincian Paket & Isi</th>
+              <th class="w-[18%] py-1 px-1.5 text-right font-semibold">Harga Satuan</th>
+              <th class="w-[20%] py-1 px-1.5 text-right font-semibold">Subtotal</th>
             </tr>
           </thead>
           <tbody id="invoiceTableBody">
-            <!-- Baris item akan dimasukkan di sini via JS -->
+            <!-- Baris item JS -->
           </tbody>
         </table>
 
-        <!-- Ringkasan Perhitungan Biaya -->
-        <table class="w-full border-collapse mb-3 text-[8pt]">
+        <!-- Calculation Summary -->
+        <table class="w-full border-collapse mb-2 text-[8pt]">
           <tr>
             <td class="text-right text-slate-600 py-0.5 px-2 w-[70%] font-medium">Subtotal Produk / Paket:</td>
             <td class="text-right font-bold py-0.5 px-2 w-[30%]" id="viewSubtotal">Rp 0</td>
@@ -343,59 +321,55 @@
             <td class="text-right font-bold py-0.5 px-2" id="viewShipping">Rp 0</td>
           </tr>
           <tr class="border-t-2 border-b-2 border-slate-300 bg-brand-50">
-            <td class="text-right py-1.5 px-2 text-[9.5pt] font-extrabold text-slate-900 uppercase">TOTAL HARUS DIBAYAR:</td>
-            <td class="text-right py-1.5 px-2 text-[11pt] font-extrabold text-brand-600" id="viewGrandTotal">Rp 0</td>
+            <td class="text-right py-1 px-2 text-[9pt] font-extrabold text-slate-900 uppercase">TOTAL HARUS DIBAYAR:</td>
+            <td class="text-right py-1 px-2 text-[10.5pt] font-extrabold text-brand-600" id="viewGrandTotal">Rp 0</td>
           </tr>
         </table>
 
-        <!-- Box Informasi Rekening & Pembayaran -->
-        <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm">
-          <div class="text-[9pt] font-bold text-slate-800 border-b border-slate-100 pb-1 mb-1.5 flex items-center justify-between">
+        <!-- Payment Info Box -->
+        <div class="bg-white border border-slate-200 rounded p-2 shadow-sm">
+          <div class="text-[8.5pt] font-bold text-slate-800 border-b border-slate-100 pb-0.5 mb-1 flex items-center justify-between">
             <span>Informasi Rekening Pembayaran</span>
             <span class="text-[7pt] text-slate-400 font-normal">Pilih salah satu transfer</span>
           </div>
-          <p class="text-[7.5pt] text-slate-600 mb-2">
+          <p class="text-[7.5pt] text-slate-600 mb-1.5">
             Silakan lakukan transfer ke salah satu rekening bank atau dompet digital berikut:
           </p>
 
-          <div class="grid grid-cols-2 gap-2 text-[7.5pt]">
-            <!-- Bank BRI -->
-            <div class="bg-slate-50 border border-slate-200/80 rounded p-1.5">
-              <div class="font-bold text-brand-600 text-[8pt]">BANK BRI</div>
-              <div class="font-mono text-[9pt] font-bold text-slate-900 tracking-wider">10550 10 0650 7503</div>
+          <div class="grid grid-cols-2 gap-1.5 text-[7.5pt]">
+            <div class="bg-slate-50 border border-slate-200/80 rounded p-1">
+              <div class="font-bold text-brand-600 text-[7.5pt]">BANK BRI</div>
+              <div class="font-mono text-[8.5pt] font-bold text-slate-900 tracking-wider">10550 10 0650 7503</div>
               <div class="text-[7pt] text-slate-500">a.n. Ahmad Nur Rochim</div>
             </div>
 
-            <!-- Bank BNI -->
-            <div class="bg-slate-50 border border-slate-200/80 rounded p-1.5">
-              <div class="font-bold text-brand-600 text-[8pt]">BANK BNI</div>
-              <div class="font-mono text-[9pt] font-bold text-slate-900 tracking-wider">1265818686</div>
+            <div class="bg-slate-50 border border-slate-200/80 rounded p-1">
+              <div class="font-bold text-brand-600 text-[7.5pt]">BANK BNI</div>
+              <div class="font-mono text-[8.5pt] font-bold text-slate-900 tracking-wider">1265818686</div>
               <div class="text-[7pt] text-slate-500">a.n. Ahmad Nur Rochim</div>
             </div>
 
-            <!-- Bank BCA -->
-            <div class="bg-slate-50 border border-slate-200/80 rounded p-1.5">
-              <div class="font-bold text-brand-600 text-[8pt]">BANK BCA</div>
-              <div class="font-mono text-[9pt] font-bold text-slate-900 tracking-wider">0600735268</div>
+            <div class="bg-slate-50 border border-slate-200/80 rounded p-1">
+              <div class="font-bold text-brand-600 text-[7.5pt]">BANK BCA</div>
+              <div class="font-mono text-[8.5pt] font-bold text-slate-900 tracking-wider">0600735268</div>
               <div class="text-[7pt] text-slate-500">a.n. Ahmad Nur Rochim</div>
             </div>
 
-            <!-- E-Wallet -->
-            <div class="bg-slate-50 border border-slate-200/80 rounded p-1.5">
-              <div class="font-bold text-brand-600 text-[8pt]">DOMPET DIGITAL (I-Saku / Dana / LinkAja)</div>
-              <div class="font-mono text-[9pt] font-bold text-slate-900 tracking-wider">0856 4983 4287</div>
+            <div class="bg-slate-50 border border-slate-200/80 rounded p-1">
+              <div class="font-bold text-brand-600 text-[7.5pt]">DOMPET DIGITAL (I-Saku/Dana/LinkAja)</div>
+              <div class="font-mono text-[8.5pt] font-bold text-slate-900 tracking-wider">0856 4983 4287</div>
               <div class="text-[7pt] text-slate-500">a.n. Ahmad Nur Rochim</div>
             </div>
           </div>
         </div>
 
-        <!-- Catatan Bukti Transfer -->
-        <div class="mt-2 text-center text-[7.5pt] text-amber-900 bg-amber-50 border border-amber-200 rounded p-1.5 font-medium" id="viewCustomNote">
+        <!-- Custom Note -->
+        <div class="mt-1.5 text-center text-[7.5pt] text-amber-900 bg-amber-50 border border-amber-200 rounded p-1 font-medium" id="viewCustomNote">
           <strong>Konfirmasi Pembayaran:</strong> Mohon kirimkan foto/tangkapan layar bukti transfer kepada kami agar pesanan segera diproses.
         </div>
 
-        <!-- Footer Invoice -->
-        <div class="mt-2.5 pt-2 border-t border-slate-200 text-center text-[7.5pt] text-slate-400">
+        <!-- Footer -->
+        <div class="mt-2 pt-1.5 border-t border-slate-200 text-center text-[7.5pt] text-slate-400">
           Terima kasih atas kepercayaan Anda belanja di <strong class="text-slate-600" id="viewFooterBrand">Oleh Oleh Jogja Hits</strong>! ☺️
         </div>
 
@@ -405,24 +379,21 @@
 
   </main>
 
-  <!-- JAVASCRIPT LOGIC LENGKAP TANPA AI -->
   <script>
-    // State Aplikasi
-    let invoiceLogoBase64 = "";
+    // LOGO DEFAULT TOKO (SVG Base64 Embedded Permanen)
+    const DEFAULT_STORE_LOGO = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232b6cb0'/><text x='50%' y='45%' font-family='sans-serif' font-weight='bold' font-size='38' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'>JOGJA</text><text x='50%' y='75%' font-family='sans-serif' font-weight='bold' font-size='20' fill='%23bee3f8' text-anchor='middle' dominant-baseline='middle'>HITS</text></svg>";
+
+    let currentLogoBase64 = DEFAULT_STORE_LOGO;
     let items = [];
 
-    // Helper format Rupiah
     function formatRp(num) {
       return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
     }
 
-    // Custom Toast
     function showToast(message, icon = "✅") {
       const toast = document.getElementById("toast");
-      const toastMsg = document.getElementById("toastMsg");
-      const toastIcon = document.getElementById("toastIcon");
-      toastMsg.innerText = message;
-      toastIcon.innerText = icon;
+      document.getElementById("toastMsg").innerText = message;
+      document.getElementById("toastIcon").innerText = icon;
       toast.classList.remove("translate-y-[-100px]", "opacity-0", "pointer-events-none");
       toast.classList.add("translate-y-0", "opacity-100");
       setTimeout(() => {
@@ -431,7 +402,30 @@
       }, 2500);
     }
 
-    // Generate Nomor Invoice
+    // DOWNLOAD PDF LANGSUNG TANPA PRINTER
+    function downloadPDFDirectly() {
+      const element = document.getElementById('invoiceSheet');
+      const custName = document.getElementById('customerNameInput').value.trim();
+      const fileName = custName ? `Invoice_Oleh_Oleh_Jogja_${custName}.pdf` : `Invoice_Oleh_Oleh_Jogja.pdf`;
+
+      const opt = {
+        margin:       [4, 4, 4, 4],
+        filename:     fileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      showToast("Mengunduh PDF...", "⏳");
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        showToast("PDF berhasil diunduh!", "🎉");
+      }).catch(err => {
+        showToast("Gagal mengunduh PDF, mencoba mode cetak...", "⚠️");
+        window.print();
+      });
+    }
+
     function generateInvoiceNo() {
       const today = new Date();
       const yr = today.getFullYear();
@@ -447,14 +441,12 @@
       showToast("Nomor invoice diperbarui");
     }
 
-    // Tanggal Hari Ini Bahasa Indonesia
     function getTodayFormatted() {
       const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
       const today = new Date();
       return `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
     }
 
-    // Switch Tab di HP/Mobile
     function switchMobileTab(tab) {
       const formSec = document.getElementById('formSection');
       const previewSec = document.getElementById('previewSection');
@@ -474,45 +466,28 @@
       }
     }
 
-    // Handle Upload Logo
-    const logoInput = document.getElementById('logoInput');
-    logoInput.addEventListener('change', function(e) {
+    // Logo Upload & Reset
+    document.getElementById('logoInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          invoiceLogoBase64 = evt.target.result;
-          updateLogoUI();
+          currentLogoBase64 = evt.target.result;
           renderInvoice();
-          showToast("Logo berhasil diunggah!");
+          showToast("Logo custom berhasil dipasang!");
         };
         reader.readAsDataURL(file);
       }
     });
 
-    function removeLogo() {
-      invoiceLogoBase64 = "";
-      logoInput.value = "";
-      updateLogoUI();
+    function resetDefaultLogo() {
+      currentLogoBase64 = DEFAULT_STORE_LOGO;
+      document.getElementById('logoInput').value = "";
       renderInvoice();
-      showToast("Logo dihapus");
+      showToast("Logo dikembalikan ke default");
     }
 
-    function updateLogoUI() {
-      const thumbImg = document.getElementById('logoThumbImg');
-      const placeholder = document.getElementById('logoPlaceholder');
-      if (invoiceLogoBase64) {
-        thumbImg.src = invoiceLogoBase64;
-        thumbImg.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-      } else {
-        thumbImg.src = "";
-        thumbImg.classList.add('hidden');
-        placeholder.classList.remove('hidden');
-      }
-    }
-
-    // Item Management
+    // Items Logic
     function addNewItem(name = "", details = "", qty = 1, price = 0) {
       items.push({
         id: Date.now() + Math.random(),
@@ -544,7 +519,6 @@
       renderInvoice();
     }
 
-    // Render list editor di form input
     function renderItemsEditor() {
       const container = document.getElementById('itemsEditorContainer');
       document.getElementById('itemCountBadge').innerText = items.length;
@@ -552,28 +526,26 @@
 
       items.forEach((item, idx) => {
         const itemCard = document.createElement('div');
-        itemCard.className = "p-3 border border-slate-200 rounded-lg bg-slate-50 space-y-2 text-xs relative";
+        itemCard.className = "p-2.5 border border-slate-200 rounded-lg bg-slate-50 space-y-2 text-xs relative";
         itemCard.innerHTML = `
           <div class="flex items-center justify-between font-semibold text-slate-700">
             <span>Baris #${idx + 1}</span>
-            <button onclick="removeItem(${idx})" class="text-red-500 hover:text-red-700 text-xs font-bold" title="Hapus Baris">✕ Hapus</button>
+            <button onclick="removeItem(${idx})" class="text-red-500 hover:text-red-700 text-xs font-bold">✕ Hapus</button>
           </div>
           <div>
-            <label class="block text-[11px] text-slate-500 mb-0.5">Nama Produk / Paket</label>
-            <input type="text" value="${escapeHtml(item.name)}" oninput="updateItemData(${idx}, 'name', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none" placeholder="Misal: Paket Oleh-Oleh Special">
+            <input type="text" value="${escapeHtml(item.name)}" oninput="updateItemData(${idx}, 'name', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none" placeholder="Nama Produk">
           </div>
           <div>
-            <label class="block text-[11px] text-slate-500 mb-0.5">Detail Isi (Gunakan tanda koma atau baris baru)</label>
-            <textarea rows="2" oninput="updateItemData(${idx}, 'details', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-[11px] bg-white focus:ring-1 focus:ring-brand-500 outline-none" placeholder="Contoh: Bakpia Kukus, Bakpiaku, Roti Sisir, dll">${escapeHtml(item.details)}</textarea>
+            <textarea rows="2" oninput="updateItemData(${idx}, 'details', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-[11px] bg-white focus:ring-1 focus:ring-brand-500 outline-none" placeholder="Rincian isi (opsional)...">${escapeHtml(item.details)}</textarea>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-[11px] text-slate-500 mb-0.5">Jumlah (Qty)</label>
-              <input type="number" min="1" value="${item.qty}" oninput="updateItemData(${idx}, 'qty', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none">
+              <label class="block text-[10px] text-slate-500">Qty</label>
+              <input type="number" min="1" value="${item.qty}" oninput="updateItemData(${idx}, 'qty', this.value)" class="w-full border border-slate-300 rounded p-1 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none">
             </div>
             <div>
-              <label class="block text-[11px] text-slate-500 mb-0.5">Harga Satuan (Rp)</label>
-              <input type="number" min="0" step="500" value="${item.price}" oninput="updateItemData(${idx}, 'price', this.value)" class="w-full border border-slate-300 rounded p-1.5 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none">
+              <label class="block text-[10px] text-slate-500">Harga Satuan (Rp)</label>
+              <input type="number" min="0" step="500" value="${item.price}" oninput="updateItemData(${idx}, 'price', this.value)" class="w-full border border-slate-300 rounded p-1 text-xs bg-white focus:ring-1 focus:ring-brand-500 outline-none">
             </div>
           </div>
         `;
@@ -586,9 +558,8 @@
       return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Render Preview Invoice
+    // Render Invoice
     function renderInvoice() {
-      // 1. Toko & Header
       const storeName = document.getElementById('storeNameInput').value || "Oleh Oleh Jogja Hits";
       const storeSub = document.getElementById('storeSubInput').value || "Layanan Pemesanan & Pengiriman";
       const custName = document.getElementById('customerNameInput').value.trim();
@@ -602,7 +573,6 @@
       document.getElementById('viewInvoiceDate').innerText = invDate;
       document.getElementById('viewInvoiceNo').innerText = invNo;
 
-      // Status Badge
       const statusText = document.getElementById('viewStatusText');
       statusText.innerText = invStatus;
       if (invStatus === "Lunas") {
@@ -613,7 +583,6 @@
         statusText.className = "text-amber-600 font-bold";
       }
 
-      // Customer Name Row
       const custRow = document.getElementById('viewCustomerRow');
       const viewCustName = document.getElementById('viewCustomerName');
       const viewGreeting = document.getElementById('viewGreetingName');
@@ -626,33 +595,23 @@
         viewGreeting.innerText = "";
       }
 
-      // Logo
-      const logoArea = document.getElementById('invoiceLogoArea');
-      const logoImg = document.getElementById('invoiceLogoImg');
-      if (invoiceLogoBase64) {
-        logoImg.src = invoiceLogoBase64;
-        logoArea.classList.remove('hidden');
-      } else {
-        logoArea.classList.add('hidden');
-        logoImg.src = "";
-      }
+      // Render Logo Image
+      document.getElementById('invoiceLogoImg').src = currentLogoBase64;
 
-      // 2. Render Tabel Items
+      // Table Render
       const tbody = document.getElementById('invoiceTableBody');
       tbody.innerHTML = "";
-
       let subtotal = 0;
 
       items.forEach((item, i) => {
         const itemSubtotal = item.qty * item.price;
         subtotal += itemSubtotal;
 
-        // Pisahkan detail bullet bila ada
         let detailsHtml = "";
         if (item.details && item.details.trim() !== "") {
           const splitLines = item.details.split(/\r?\n|,/).map(s => s.trim()).filter(Boolean);
           if (splitLines.length > 0) {
-            detailsHtml = `<ul class="list-disc pl-4 mt-1 text-[7.5pt] text-slate-500 space-y-0.5">
+            detailsHtml = `<ul class="list-disc pl-3.5 mt-0.5 text-[7pt] text-slate-500 space-y-0.5">
               ${splitLines.map(l => `<li>${escapeHtml(l)}</li>`).join("")}
             </ul>`;
           }
@@ -661,26 +620,24 @@
         const tr = document.createElement('tr');
         tr.className = (i % 2 === 1) ? "bg-slate-50 border-b border-slate-200" : "border-b border-slate-200";
         tr.innerHTML = `
-          <td class="py-1.5 px-2 text-center align-top font-medium">${i + 1}</td>
-          <td class="py-1.5 px-2 text-center align-top font-bold">${item.qty}</td>
-          <td class="py-1.5 px-2 align-top">
+          <td class="py-1 px-1.5 text-center align-top font-medium">${i + 1}</td>
+          <td class="py-1 px-1.5 text-center align-top font-bold">${item.qty}</td>
+          <td class="py-1 px-1.5 align-top">
             <strong class="text-slate-900">${escapeHtml(item.name)}</strong>
             ${detailsHtml}
           </td>
-          <td class="py-1.5 px-2 text-right align-top text-slate-700">${formatRp(item.price)}</td>
-          <td class="py-1.5 px-2 text-right align-top font-bold text-slate-900">${formatRp(itemSubtotal)}</td>
+          <td class="py-1 px-1.5 text-right align-top text-slate-700">${formatRp(item.price)}</td>
+          <td class="py-1 px-1.5 text-right align-top font-bold text-slate-900">${formatRp(itemSubtotal)}</td>
         `;
         tbody.appendChild(tr);
       });
 
-      // 3. Kalkulasi & Ringkasan Biaya
       const shipping = Number(document.getElementById('shippingInput').value) || 0;
       const discount = Number(document.getElementById('discountInput').value) || 0;
       const grandTotal = Math.max(0, subtotal - discount + shipping);
 
       document.getElementById('viewSubtotal').innerText = formatRp(subtotal);
 
-      // Baris Diskon
       const rowDisc = document.getElementById('rowDiscount');
       if (discount > 0) {
         rowDisc.classList.remove('hidden');
@@ -689,7 +646,6 @@
         rowDisc.classList.add('hidden');
       }
 
-      // Baris Ongkir
       const rowShip = document.getElementById('rowShipping');
       if (shipping > 0) {
         rowShip.classList.remove('hidden');
@@ -700,7 +656,6 @@
 
       document.getElementById('viewGrandTotal').innerText = formatRp(grandTotal);
 
-      // Custom Note
       const customNote = document.getElementById('customNoteInput').value;
       const noteView = document.getElementById('viewCustomNote');
       if (customNote.trim()) {
@@ -711,7 +666,7 @@
       }
     }
 
-    // Salin Teks Format WhatsApp
+    // WA Copy
     function copyWAText() {
       const storeName = document.getElementById('storeNameInput').value || "Oleh Oleh Jogja Hits";
       const custName = document.getElementById('customerNameInput').value.trim();
@@ -748,21 +703,20 @@
       text += `I-Saku/Dana/Link Aja : 085649834287 a.n. Ahmad Nur Rochim\n\n`;
       text += `Dan mengirimkan foto bukti transfer kepada kami untuk segera diproses, Terima Kasih ☺️`;
 
-      // Copying via fallback execCommand
       const dummy = document.createElement("textarea");
       document.body.appendChild(dummy);
       dummy.value = text;
       dummy.select();
       try {
         document.execCommand("copy");
-        showToast("Format teks WA berhasil disalin!");
+        showToast("Teks WA berhasil disalin!");
       } catch (err) {
-        showToast("Gagal menyalin secara otomatis", "❌");
+        showToast("Gagal menyalin otomatis", "❌");
       }
       document.body.removeChild(dummy);
     }
 
-    // Template Cepat (Presets)
+    // Presets
     function loadPreset(type) {
       if (type === 'raja') {
         document.getElementById('customerNameInput').value = "Raja";
@@ -770,7 +724,7 @@
         document.getElementById('discountInput').value = 0;
         items = [{
           id: 1,
-          name: "Paket Oleh-oleh Jogja (Isi Lengkap)",
+          name: "Paket Oleh-oleh Jogja",
           details: "Bakpia Kurniasari, Bakpia Kukus Tugu, Roti sisir Jogja, Coklat Monggo 40 gr, Pie Susu Nayla, Keripik Jamur Tiram, Dus tenteng",
           qty: 50,
           price: 300000
@@ -789,7 +743,7 @@
       } else if (type === 'paket509') {
         document.getElementById('customerNameInput').value = "";
         document.getElementById('shippingInput').value = 20000;
-        document.getElementById('discountInput').value = 105000; // 15.000 x 7
+        document.getElementById('discountInput').value = 105000;
         items = [
           {
             id: 3,
@@ -823,17 +777,14 @@
 
       renderItemsEditor();
       renderInvoice();
-      showToast(`Template ${type.toUpperCase()} dimuat!`);
+      showToast(`Preset dimuat!`);
     }
 
-    // Inisialisasi awal saat load
     window.onload = function() {
       document.getElementById('invoiceDateInput').value = getTodayFormatted();
       document.getElementById('invoiceNoInput').value = generateInvoiceNo();
-      // Muat default preset Raja
       loadPreset('raja');
     };
   </script>
 </body>
 </html>
-```
