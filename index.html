@@ -8,7 +8,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Library html2pdf.js untuk Unduh PDF Langsung tanpa Printer -->
+  <!-- Library html2pdf.js untuk Unduh PDF Langsung tanpa Lewat Printer -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <script>
@@ -31,6 +31,7 @@
     }
   </script>
   <style>
+    /* Styling khusus cetak & PDF agar pas 1 Halaman A4 */
     @media print {
       body {
         background: #ffffff !important;
@@ -71,7 +72,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 
-  <!-- Toast Notification -->
+  <!-- Toast Notification Custom -->
   <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm font-medium border border-slate-700">
     <span id="toastIcon">✨</span>
     <span id="toastMsg">Pesan notifikasi</span>
@@ -86,7 +87,7 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide">Oleh Oleh Jogja Hits</h1>
-          <p class="text-xs text-brand-100">Pembuat Invoice Otomatis</p>
+          <p class="text-xs text-brand-100">Sistem Pembuat Invoice Otomatis</p>
         </div>
       </div>
 
@@ -104,7 +105,7 @@
     </div>
   </header>
 
-  <!-- Tombol Tab Khusus HP -->
+  <!-- Tombol Tab Khusus Layar HP/Mobile -->
   <div class="no-print lg:hidden bg-white border-b border-slate-200 px-4 py-2 sticky top-[61px] z-30 flex gap-2">
     <button id="tabBtnForm" onclick="switchMobileTab('form')" class="flex-1 py-2 text-sm font-bold rounded-md bg-brand-600 text-white transition">
       ✏️ Edit Data
@@ -120,21 +121,22 @@
     <!-- FORM INPUT DATA (NO-PRINT) -->
     <section id="formSection" class="no-print lg:col-span-5 flex flex-col gap-4">
       
-      <!-- MENU BARU: BACA TEKS CHAT OTOMATIS -->
+      <!-- MENU BACA TEKS CHAT OTOMATIS -->
       <div class="bg-amber-50 border border-amber-300 p-4 rounded-xl shadow-sm space-y-2">
         <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center justify-between">
           <span>⚡ Baca Teks Obrolan / WA Otomatis</span>
           <span class="text-[10px] font-normal text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Fitur Baru</span>
         </label>
         <p class="text-[11px] text-amber-800 leading-tight">
-          Tempel (*paste*) teks rekap pesanan di sini, sistem akan langsung membaca Qty, nama barang, harga, ongkir, dan diskon secara otomatis.
+          Tempel (*paste*) teks rekap pesanan dari WA di sini, sistem akan langsung membaca Qty, barang, harga, ongkir, diskon & nama otomatis.
         </p>
         <textarea id="rawTextInput" rows="5" class="w-full text-xs p-2.5 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white font-mono" placeholder="Tempel teks di sini, contoh:
 1 Lemper bu sri ayam ori isi 10 Rp 63.000
 1 tasuba sapi Rp 45.000
 3 bakpiaku isi 10 keju Rp 53.000
 Ongkir : Rp 20.000
-Diskon 15.000"></textarea>
+Diskon : 15.000 x 10
+Atas nama Raja"></textarea>
         <button onclick="parseRawText()" class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center justify-center gap-1.5">
           <span>📋</span>
           <span>Proses Teks & Buat Invoice</span>
@@ -398,7 +400,7 @@ Diskon 15.000"></textarea>
   </main>
 
   <script>
-    const DEFAULT_STORE_LOGO = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232b6cb0'/><text x='50%' y='45%' font-family='sans-serif' font-weight='bold' font-size='38' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'>JOGJA</text><text x='50%' y='75%' font-family='sans-serif' font-weight='bold' font-size='20' fill='%23bee3f8' text-anchor='middle' dominant-baseline='middle'>HITS</text></svg>";
+    const DEFAULT_STORE_LOGO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzJiNmNiMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNDUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMzIiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkpPR0pBPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNzUlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNiZWUzZjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkhJVFMgPC90ZXh0Pjwvc3ZnPg==";
 
     let currentLogoBase64 = DEFAULT_STORE_LOGO;
     let items = [];
@@ -419,126 +421,46 @@ Diskon 15.000"></textarea>
       }, 2500);
     }
 
-    // MEMBACA DAN MEMBACA TEKS CHAT WA / REKAP OTOMATIS (PARSER TEKS)
-    function parseRawText() {
-      const rawText = document.getElementById('rawTextInput').value;
-      if (!rawText.trim()) {
-        showToast("Kotak teks masih kosong!", "⚠️");
-        return;
-      }
-
-      const lines = rawText.split('\n');
-      const parsedItems = [];
-      let foundOngkir = 0;
-      let foundDiscount = 0;
-      let customerNameFound = "";
-
-      lines.forEach(line => {
-        let clean = line.trim();
-        if (!clean) return;
-
-        // Cek Nama Pelanggan (misal: "Atas nama Raja")
-        const nameMatch = clean.match(/(?:atas\s+nama|nama|pemesan|kepada)\s*:?\s*([a-zA-Z0-9\s]+)/i);
-        if (nameMatch && nameMatch[1]) {
-          customerNameFound = nameMatch[1].trim();
-        }
-
-        // Cek Ongkir (misal: "Ongkir : Rp 20.000")
-        if (/ongkir|ongkos\s*kirim/i.test(clean)) {
-          const numMatch = clean.replace(/\./g, '').match(/(\d+)/);
-          if (numMatch) foundOngkir = parseInt(numMatch[1], 10);
-          return;
-        }
-
-        // Cek Diskon (misal: "Diskon 15.000 x 10" atau "Diskon : 30.000")
-        if (/diskon|potongan/i.test(clean)) {
-          // Cek perkalian diskon misal 15000 x 10
-          const multMatch = clean.replace(/\./g, '').match(/(\d+)\s*x\s*(\d+)/i);
-          if (multMatch) {
-            foundDiscount = parseInt(multMatch[1], 10) * parseInt(multMatch[2], 10);
-          } else {
-            const numMatch = clean.replace(/\./g, '').match(/(\d+)/);
-            if (numMatch) foundDiscount = parseInt(numMatch[1], 10);
-          }
-          return;
-        }
-
-        // Abaikan baris total / header
-        if (/^total|^subtotal|invoice|thank\s*you|produk\s*:|^silahkan|^transfer|^bri|^bca|^bni|^dan\s*mengirimkan/i.test(clean)) {
-          return;
-        }
-
-        // Pola pembacaan produk: "Qty Nama_Barang Rp Harga" atau "Qty Nama_Barang Harga"
-        // Contoh: "1 Lemper bu sri ayam ori isi 10 Rp 63.000"
-        // Contoh: "3 bakpiaku isi 10 keju ( vakum Rp 53.000"
-        let qty = 1;
-        let price = 0;
-        let name = clean;
-
-        // Ekstraksi Harga dari ujung baris / setelah Rp
-        const priceMatch = clean.replace(/\./g, '').match(/(?:rp\s*)?(\d{4,7})\s*$/i) || clean.replace(/\./g, '').match(/rp\s*(\d{4,7})/i);
-        if (priceMatch) {
-          price = parseInt(priceMatch[1], 10);
-          // Hapus bagian harga dari nama barang
-          name = name.replace(/rp\s*[\d\.\,]+/gi, '').replace(/[\d\.\,]+\s*$/g, '').trim();
-        }
-
-        // Ekstraksi Qty dari awal baris
-        const qtyMatch = name.match(/^(\d+)\s+(.+)/);
-        if (qtyMatch) {
-          qty = parseInt(qtyMatch[1], 10);
-          name = qtyMatch[2].trim();
-        }
-
-        // Bersihkan karakter simbol tersisa di awal/akhir nama
-        name = name.replace(/^[-•\*]+\s*/, '').replace(/[\(\s]+$/, '').trim();
-
-        if (name && (price > 0 || qty > 0)) {
-          parsedItems.push({
-            id: Date.now() + Math.random(),
-            name: name,
-            details: "",
-            qty: qty,
-            price: price
-          });
-        }
-      });
-
-      if (parsedItems.length > 0) {
-        items = parsedItems;
-        if (customerNameFound) document.getElementById('customerNameInput').value = customerNameFound;
-        if (foundOngkir > 0) document.getElementById('shippingInput').value = foundOngkir;
-        if (foundDiscount > 0) document.getElementById('discountInput').value = foundDiscount;
-
-        renderItemsEditor();
-        renderInvoice();
-        showToast(`${parsedItems.length} Produk berhasil dibaca!`, "🎉");
-      } else {
-        showToast("Format teks tidak terdeteksi, silakan periksa kembali", "❌");
-      }
-    }
-
+    // DOWNLOAD PDF LANGSUNG TANPA PRINTER (SOLUSI BUG HP)
     function downloadPDFDirectly() {
       const element = document.getElementById('invoiceSheet');
+      const previewSec = document.getElementById('previewSection');
       const custName = document.getElementById('customerNameInput').value.trim();
-      const fileName = custName ? `Invoice_Oleh_Oleh_Jogja_${custName}.pdf` : `Invoice_Oleh_Oleh_Jogja.pdf`;
+      const fileName = custName ? `Invoice_Oleh_Oleh_Jogja_${custName.replace(/\s+/g, '_')}.pdf` : `Invoice_Oleh_Oleh_Jogja.pdf`;
+
+      // Tampilkan pratinjau sementara jika tersembunyi di tab mobile
+      const wasHidden = previewSec.classList.contains('hidden');
+      if (wasHidden) {
+        previewSec.classList.remove('hidden');
+      }
+
+      showToast("Mengunduh PDF...", "⏳");
 
       const opt = {
         margin:       [4, 4, 4, 4],
         filename:     fileName,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        html2canvas:  { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false,
+          windowWidth: 1024
+        },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      showToast("Mengunduh PDF...", "⏳");
-
-      html2pdf().set(opt).from(element).save().then(() => {
-        showToast("PDF berhasil diunduh!", "🎉");
-      }).catch(err => {
-        showToast("Gagal mengunduh PDF, membuka mode print...", "⚠️");
-        window.print();
-      });
+      // Beri sedikit jeda agar DOM render sempurna sebelum di-capture
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          if (wasHidden) previewSec.classList.add('hidden');
+          showToast("PDF berhasil diunduh!", "🎉");
+        }).catch(err => {
+          if (wasHidden) previewSec.classList.add('hidden');
+          console.error(err);
+          showToast("Gagal mengunduh PDF, membuka mode print...", "⚠️");
+          window.print();
+        });
+      }, 150);
     }
 
     function generateInvoiceNo() {
@@ -578,6 +500,99 @@ Diskon 15.000"></textarea>
         previewSec.classList.remove('hidden');
         btnForm.className = 'flex-1 py-2 text-sm font-bold rounded-md bg-slate-100 text-slate-700 transition';
         btnPreview.className = 'flex-1 py-2 text-sm font-bold rounded-md bg-brand-600 text-white transition';
+      }
+    }
+
+    // PARSER TEKS CHAT WA
+    function parseRawText() {
+      const rawText = document.getElementById('rawTextInput').value;
+      if (!rawText.trim()) {
+        showToast("Kotak teks masih kosong!", "⚠️");
+        return;
+      }
+
+      const lines = rawText.split('\n');
+      const parsedItems = [];
+      let foundOngkir = 0;
+      let foundDiscount = 0;
+      let customerNameFound = "";
+
+      lines.forEach(line => {
+        let clean = line.trim();
+        if (!clean) return;
+
+        // Cek Nama Pelanggan
+        const nameMatch = clean.match(/(?:atas\s+nama|nama|pemesan|kepada)\s*:?\s*([a-zA-Z0-9\s]+)/i);
+        if (nameMatch && nameMatch[1]) {
+          customerNameFound = nameMatch[1].trim();
+        }
+
+        // Cek Ongkir
+        if (/ongkir|ongkos\s*kirim/i.test(clean)) {
+          const numMatch = clean.replace(/\./g, '').match(/(\d+)/);
+          if (numMatch) foundOngkir = parseInt(numMatch[1], 10);
+          return;
+        }
+
+        // Cek Diskon
+        if (/diskon|potongan/i.test(clean)) {
+          const multMatch = clean.replace(/\./g, '').match(/(\d+)\s*x\s*(\d+)/i);
+          if (multMatch) {
+            foundDiscount = parseInt(multMatch[1], 10) * parseInt(multMatch[2], 10);
+          } else {
+            const numMatch = clean.replace(/\./g, '').match(/(\d+)/);
+            if (numMatch) foundDiscount = parseInt(numMatch[1], 10);
+          }
+          return;
+        }
+
+        // Abaikan baris header / footer
+        if (/^total|^subtotal|invoice|thank\s*you|produk\s*:|^silahkan|^transfer|^bri|^bca|^bni|^dan\s*mengirimkan/i.test(clean)) {
+          return;
+        }
+
+        let qty = 1;
+        let price = 0;
+        let name = clean;
+
+        // Ekstraksi Harga dari baris
+        const priceMatch = clean.replace(/\./g, '').match(/(?:rp\s*)?(\d{4,7})\s*$/i) || clean.replace(/\./g, '').match(/rp\s*(\d{4,7})/i);
+        if (priceMatch) {
+          price = parseInt(priceMatch[1], 10);
+          name = name.replace(/rp\s*[\d\.\,]+/gi, '').replace(/[\d\.\,]+\s*$/g, '').trim();
+        }
+
+        // Ekstraksi Qty dari awal baris
+        const qtyMatch = name.match(/^(\d+)\s+(.+)/);
+        if (qtyMatch) {
+          qty = parseInt(qtyMatch[1], 10);
+          name = qtyMatch[2].trim();
+        }
+
+        name = name.replace(/^[-•\*]+\s*/, '').replace(/[\(\s]+$/, '').trim();
+
+        if (name && (price > 0 || qty > 0)) {
+          parsedItems.push({
+            id: Date.now() + Math.random(),
+            name: name,
+            details: "",
+            qty: qty,
+            price: price
+          });
+        }
+      });
+
+      if (parsedItems.length > 0) {
+        items = parsedItems;
+        if (customerNameFound) document.getElementById('customerNameInput').value = customerNameFound;
+        if (foundOngkir >= 0) document.getElementById('shippingInput').value = foundOngkir;
+        if (foundDiscount >= 0) document.getElementById('discountInput').value = foundDiscount;
+
+        renderItemsEditor();
+        renderInvoice();
+        showToast(`${parsedItems.length} Produk berhasil dibaca!`, "🎉");
+      } else {
+        showToast("Format teks tidak terdeteksi, silakan periksa lagi", "❌");
       }
     }
 
@@ -891,7 +906,6 @@ Diskon 15.000"></textarea>
     window.onload = function() {
       document.getElementById('invoiceDateInput').value = getTodayFormatted();
       document.getElementById('invoiceNoInput').value = generateInvoiceNo();
-      // Contoh isi default di kotak teks
       document.getElementById('rawTextInput').value = `1 Lemper bu sri ayam ori isi 10 Rp 63.000
 1 tasuba sapi Rp 45.000
 3 bakpiaku isi 10 keju Rp 53.000
@@ -902,7 +916,6 @@ Diskon 15.000"></textarea>
 
 Ongkir : Rp 0`;
       
-      // Jalankan pembaca teks awal
       parseRawText();
     };
   </script>
